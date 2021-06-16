@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="main_div">
+        <div class="music_container">
+            <h2 id='title'>Bom Diggy Bom</h2>
+            <h3 id='artist'>Zack knight</h3>
+            <div class="img_container">
+                <img src="img/music-1.jpg" alt="" >
+            </div>
+            <audio src="music/music-1.mp3" ></audio>
+
+            <!-- Progress Bar -->
+            <div class="progressbar_container" id="progress_container">
+                <div class="progress_duration_meter">
+                    <div id="current_time">0:00</div>
+                    <div id="duration">3:27</div>
+                </div>
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="music_controls">
+                <i class="fas fa-backward" id="prev" title="Previous"></i>
+                <i class="fas fa-play main_button" id="play" title="Play"></i>
+                <i class="fas fa-forward" id="next" title="Next"></i>
+            </div>
+        </div>
+    </div>
+    <script>
+        const music=document.querySelector('audio');// Music
+        const img=document.querySelector('img');//Image
+        const play=document.getElementById('play');//Play Button
+        const title=document.getElementById('title');//Title
+        const artist=document.getElementById('artist');//Artist
+        const prev=document.getElementById('prev');//Previous Button
+        const next=document.getElementById('next');//Next button
+
+        let progress=document.getElementById('progress');
+
+        let tot_duration =document.getElementById('duration');
+        let current_time=document.getElementById('current_time');
+
+
+        const progress_div=document.getElementById('progress_div');
+        const songs=[{
+            name:"music-1",
+            title:"Bom diggy",
+            artist:'Zack Knight'
+
+        },{
+            name:"music-2",
+            title:"Baby Jaan",
+            artist:'Nisam'
+        },{
+            name:"music-3",
+            title:"Oh Baby",
+            artist:'Arman Mallik'
+        }];
+
+        let isPlaying=false;
+
+        //for play functionality    
+        const playMusic=()=>{
+            isPlaying=true;
+
+            music.play();
+            play.classList.replace('fa-play','fa-pause');
+            img.classList.add('anime');
+        };
+
+        //for pause functionality
+        const pauseMusic=()=>{
+            isPlaying=false;
+
+            music.pause();
+            play.classList.replace('fa-pause','fa-play');
+            img.classList.remove('anime');
+        };
+
+        play.addEventListener('click',()=>{
+
+            if(isPlaying==false){
+                playMusic();
+            }else{
+                pauseMusic();
+            }
+        });
+
+        // changing song
+        const loadSong=(songs)=>{
+            title.textContent=songs.title;
+            artist.textContent=songs.artist;
+            music.src="music/"+songs.name+".mp3";
+            img.src="img/"+songs.name+".jpg";
+        };
+        // loadSong(songs[2]);
+        let songIndex=0;
+
+        const nextSong=()=>{
+            
+            songIndex=(songIndex+1) % songs.length;
+            loadSong(songs[songIndex]);
+            playMusic();
+        };
+
+        const prevSong=()=>{
+
+            songIndex=(songIndex -1+songs.length)%songs.length;
+            loadSong(songs[songIndex]);
+            playMusic();
+        };
+
+        
+
+        //Js For Progress Bar
+        music.addEventListener('timeupdate',(event)=>{
+               const {currentTime,duration}=event.srcElement;
+
+               let progressTime=(currentTime/duration)*100;
+               progress.style.width=`${progressTime}%`;
+
+            //    music duration update
+            min_duration=Math.floor(duration /60);
+            sec_duration=Math.floor(duration%60);
+
+            //To remove NaN
+            if(duration){
+            tot_duration.textContent=`${min_duration}:${sec_duration}`;
+            }
+
+            //    current duration update
+            min_current=Math.floor(currentTime /60);
+            sec_current=Math.floor(currentTime%60);
+            if(sec_current<10){
+                sec_current=`0${sec_current}`;
+            }
+            //To remove NaN
+            if(currentTime){
+            current_time.textContent=`${min_current}:${sec_current}`;
+            }
+
+
+        });
+        //Progress onclick functionality
+        progress_div.addEventListener('click',(event)=>{
+       const {duration}=music;
+       let music_progress=(event.offsetX/event.srcElement.clientWidth)*duration;
+
+       music.currentTime=music_progress;
+        });
+
+        music.addEventListener('ended',nextSong);
+
+        next.addEventListener('click',nextSong);
+        prev.addEventListener('click',prevSong);
+
+    </script>
+</body>
+</html>
